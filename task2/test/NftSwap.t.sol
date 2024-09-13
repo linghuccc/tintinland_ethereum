@@ -46,10 +46,7 @@ contract NftSwapTest is Test {
         // List the NFT
         nftSwap.list(address(mockNft), tokenId, price);
 
-        // Check the order
-        // NftSwap.Order memory order = nftSwap.orders[address(mockNft)][tokenId];
-        // assertEq(order.owner, seller);
-        // assertEq(order.price, price);
+        // Check the order owner and price
         (address orderOwner, uint orderPrice) = nftSwap.orders(
             address(mockNft),
             tokenId
@@ -71,9 +68,6 @@ contract NftSwapTest is Test {
         nftSwap.revoke(address(mockNft), tokenId);
 
         // Check that the order no longer exists
-        // NftSwap.Order memory order = nftSwap.orders[address(mockNft)][tokenId];
-        // assertEq(order.owner, address(0)); // Order should be deleted
-        // assertEq(order.price, 0);
         (address orderOwner, uint orderPrice) = nftSwap.orders(
             address(mockNft),
             tokenId
@@ -95,9 +89,7 @@ contract NftSwapTest is Test {
         // Update the order price
         nftSwap.update(address(mockNft), tokenId, newPrice);
 
-        // Check that the price is updated
-        // NftSwap.Order memory order = nftSwap.orders[address(mockNft)][tokenId];
-        // assertEq(order.price, newPrice);
+        // Check that the order price is updated
         (, uint orderPrice) = nftSwap.orders(address(mockNft), tokenId);
         assertEq(orderPrice, newPrice);
         vm.stopPrank();
@@ -120,9 +112,6 @@ contract NftSwapTest is Test {
         // Check that the buyer is now the owner of the NFT
         assertEq(mockNft.ownerOf(tokenId), buyer);
         // Check that the order is deleted
-        // NftSwap.Order memory order = nftSwap.orders[address(mockNft)][tokenId];
-        // assertEq(order.owner, address(0));
-        // assertEq(order.price, 0);
         (address orderOwner, uint orderPrice) = nftSwap.orders(
             address(mockNft),
             tokenId
@@ -132,7 +121,7 @@ contract NftSwapTest is Test {
         vm.stopPrank();
     }
 
-    function testFailPurchaseWithInsufficientPayment() public {
+    function testPurchaseWithInsufficientPayment() public {
         vm.startPrank(seller);
         uint256 tokenId = 1;
         uint256 price = 1 ether;
@@ -143,9 +132,7 @@ contract NftSwapTest is Test {
 
         // Buyer tries to purchase with insufficient funds
         vm.startPrank(buyer);
-        // vm.expectRevert(); // Expect any revert ~ Not working
-        vm.expectRevert("Insufficient payment"); // Should work but having error ~ "[Revert] revert: Insufficient payment"
-        // vm.expectRevert("revert: Insufficient payment"); // No error
+        vm.expectRevert("Insufficient payment");
         nftSwap.purchase{value: 0}(address(mockNft), tokenId);
         vm.stopPrank();
     }
