@@ -143,8 +143,9 @@ contract NftSwapTest is Test {
 
         // Buyer tries to purchase with insufficient funds
         vm.startPrank(buyer);
-        // vm.expectRevert(); // Expect any revert
-        vm.expectRevert("revert: Insufficient payment");
+        // vm.expectRevert(); // Expect any revert ~ Not working
+        vm.expectRevert("Insufficient payment"); // Should work but having error ~ "[Revert] revert: Insufficient payment"
+        // vm.expectRevert("revert: Insufficient payment"); // No error
         nftSwap.purchase{value: 0}(address(mockNft), tokenId);
         vm.stopPrank();
     }
