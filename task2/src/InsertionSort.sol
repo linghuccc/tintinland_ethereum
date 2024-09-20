@@ -3,6 +3,8 @@ pragma solidity ^0.8.22;
 
 contract InsertionSort {
     function sort(uint[] memory data) public pure returns (uint[] memory) {
+        require(data.length >= 2, "No need to sort");
+        
         for (uint i = 1; i < data.length; i++) {
             uint key = data[i];
             uint j = i;
