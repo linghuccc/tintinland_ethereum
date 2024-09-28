@@ -1,66 +1,28 @@
-## Foundry
+# Task 2
 
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
+## Practice 02: Insertion Sort
 
-Foundry consists of:
+使用 Solidity 实现一个插入排序算法
 
--   **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
--   **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
--   **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
--   **Chisel**: Fast, utilitarian, and verbose solidity REPL.
+排序算法解决的问题是将无序的一组数字，例如[2, 5, 3, 1]，从小到大依次排列好。插入排序（InsertionSort）是最简单的一种排序算法，也是很多人学习的第一个算法。它的思路很简单，从前往后，依次将每一个数和排在他前面的数字比大小，如果比前面的数字小，就互换位置。
 
-## Documentation
+Version Updates:
 
-https://book.getfoundry.sh/
+-   **v2**: Update **"require()"** statements to **custom errors**.
 
-## Usage
+## Practice 03: NFT Swap
 
-### Build
+使用 Solidity 实现一个 NFT Swap
 
-```shell
-$ forge build
-```
+利用智能合约搭建一个零手续费的去中心化 NFT 交易所，主要逻辑：
 
-### Test
+-   卖家：出售 NFT 的一方，可以挂单 list、撤单 revoke、修改价格 update。
 
-```shell
-$ forge test
-```
+-   买家：购买 NFT 的一方，可以购买 purchase。
 
-### Format
+-   订单：卖家发布的 NFT 链上订单，一个系列的同一 tokenId 最多存在一个订单，其中包含挂单价格 price 和持有人 owner 信息。当一个订单交易完成或被撤单后，其中信息清零。
 
-```shell
-$ forge fmt
-```
+Version Updates:
 
-### Gas Snapshots
-
-```shell
-$ forge snapshot
-```
-
-### Anvil
-
-```shell
-$ anvil
-```
-
-### Deploy
-
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
-```
-
-### Cast
-
-```shell
-$ cast <subcommand>
-```
-
-### Help
-
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
-```
+-   **v2**: Add **ReentrancyGuard** for purchase() function; Update all **"payable(account).transfer()"** to **"(account).call{value: amount}()"**.
+-   **v3**: Update all **"require()"** statements to **custom errors**.
