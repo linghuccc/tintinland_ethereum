@@ -16,4 +16,4 @@
 
 ### 代码实现
 
-使用 Foundry 框架，已经部署在 Morph Holesky Testnet: https://explorer-holesky.morphl2.io/address/0xeB96a55Fec508c2F7f51116576F81E7c6c7793CC?tab=contract
+使用 Foundry 框架，已经部署在 Morph Holesky Testnet: [0xeB96a55Fec508c2F7f51116576F81E7c6c7793CC](https://explorer-holesky.morphl2.io/address/0xeB96a55Fec508c2F7f51116576F81E7c6c7793CC?tab=contract)

@@ -105,34 +105,34 @@ const BookRoomModal: React.FC<BookRoomModalProps> = ({ children, room }) => {
 		}
 
 		try {
-			const tokenApprovalTx = await writeContractAsync({
-				abi: tokenAbi,
-				address: tokenAddress,
-				functionName: 'approve',
-				args: [bookingAddress, room.pricePerNight * BigInt(duration)],
-			})
+			// const tokenApprovalTx = await writeContractAsync({
+			// 	abi: tokenAbi,
+			// 	address: tokenAddress,
+			// 	functionName: 'approve',
+			// 	args: [bookingAddress, room.pricePerNight * BigInt(duration)],
+			// })
 
-			console.log('token approval hash:', tokenApprovalTx)
+			// console.log('token approval hash:', tokenApprovalTx)
 
 			// Wait for the token approval transaction to be confirmed
-			const provider = new ethers.providers.Web3Provider(window.ethereum)
-			const receipt = await provider.waitForTransaction(tokenApprovalTx)
+			// const provider = new ethers.providers.Web3Provider(window.ethereum)
+			// const receipt = await provider.waitForTransaction(tokenApprovalTx)
 
-			if (receipt.status === 1) {
-				console.log('Token approval transaction confirmed')
+			// if (receipt.status === 1) {
+			// 	console.log('Token approval transaction confirmed')
 
-				// Proceed with booking the room only after successful token approval
-				const bookRoomTx = await writeContractAsync({
-					abi: bookingAbi,
-					address: bookingAddress,
-					functionName: 'bookRoomByRoomId',
-					args: [room.id, data.checkInDate, duration],
-				})
+			// Proceed with booking the room only after successful token approval
+			const bookRoomTx = await writeContractAsync({
+				abi: bookingAbi,
+				address: bookingAddress,
+				functionName: 'bookRoomByRoomId',
+				args: [room.id, data.checkInDate, duration],
+			})
 
-				console.log('room booking hash:', bookRoomTx)
-			} else {
-				console.error('Token approval transaction failed')
-			}
+			console.log('room booking hash:', bookRoomTx)
+			// } else {
+			// 	console.error('Token approval transaction failed')
+			// }
 		} catch (err: any) {
 			toast.error('Transaction Failed: ' + err.message)
 		}

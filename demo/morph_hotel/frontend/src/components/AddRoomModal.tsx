@@ -124,21 +124,26 @@ const AddRoomModal = ({ children }: AddRoomModalProps) => {
 								control={form.control}
 								name="category"
 								render={({ field }) => (
-									<FormItem>
-										<FormLabel className="">
+									<FormItem className="flex justify-between items-center">
+										<FormLabel className="mr-4">
 											<h1 className="text-[#32393A]">
-												Room Category (0-2) (0 for
-												Presidential, 1 for Deluxe and 2
-												for Suite)
+												Room Category
 											</h1>
 										</FormLabel>
-										<FormControl>
-											<Input
-												className="rounded-full"
-												type="number"
-												placeholder="0"
+										<FormControl className="border rounded-md">
+											<select
 												{...field}
-											/>
+												className="border rounded-md"
+												defaultValue="2"
+											>
+												<option value="0">
+													Presidential
+												</option>
+												<option value="1">
+													Deluxe
+												</option>
+												<option value="2">Suite</option>
+											</select>
 										</FormControl>
 										<FormMessage />
 									</FormItem>
@@ -152,9 +157,7 @@ const AddRoomModal = ({ children }: AddRoomModalProps) => {
 									<FormItem>
 										<FormLabel className="">
 											<h1 className="text-[#32393A]">
-												Price per Night (Rooms of same
-												category should have unique
-												price)
+												Price per Night (in MHT)
 											</h1>
 										</FormLabel>
 										<FormControl>
