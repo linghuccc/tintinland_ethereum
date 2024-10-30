@@ -26,12 +26,11 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { parseUnits } from 'viem'
 
-interface AddRoomModalProps {
+interface SetAvailabilityModalProps {
 	children: React.ReactNode
 }
-const AddRoomModal = ({ children }: AddRoomModalProps) => {
+const SetAvailabilityModal = ({ children }: SetAvailabilityModalProps) => {
 	const {
 		data: hash,
 		error,
@@ -66,29 +65,29 @@ const AddRoomModal = ({ children }: AddRoomModalProps) => {
 	}, [isConfirming, isConfirmed, error, hash])
 
 	const formSchema = z.object({
-		category: z.any(),
-		price: z.any(),
+		roomId: z.any(),
+		availability: z.any(),
 	})
 
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
-			category: 0,
-			price: 0,
+			roomId: 0,
+			availability: undefined,
 		},
 	})
 
-	const AddRoom = async (data: z.infer<typeof formSchema>) => {
+	const SetAvailability = async (data: z.infer<typeof formSchema>) => {
 		console.log(data)
 		try {
-			const priceInWei = parseUnits(data.price.toString(), 18) // Token has 18 decimals
+			const availability = data.availability === 'true'
 
 			const addRoomTx = await writeContractAsync({
 				address: bookingAddress,
 				abi: bookingAbi,
 
-				functionName: 'addRoom',
-				args: [data.category, priceInWei],
+				functionName: 'setRoomAvailability',
+				args: [data.roomId, availability],
 			})
 
 			console.log('room transaction hash:', addRoomTx)
@@ -110,26 +109,24 @@ const AddRoomModal = ({ children }: AddRoomModalProps) => {
 							</AlertDialogCancel>
 						</div>
 						<div className="flex items-center gap-6 justify-center">
-							<h1>Add a Room</h1>
+							<h1>Set Room Availability</h1>
 						</div>
 					</AlertDialogTitle>
 				</AlertDialogHeader>
 				<div>
 					<Form {...form}>
 						<form
-							onSubmit={form.handleSubmit(AddRoom)}
+							onSubmit={form.handleSubmit(SetAvailability)}
 							className="space-y-8"
 						>
 							<FormField
 								control={form.control}
-								name="category"
+								name="roomId"
 								render={({ field }) => (
 									<FormItem>
 										<FormLabel className="">
 											<h1 className="text-[#32393A]">
-												Room Category (0-2) (0 for
-												Presidential, 1 for Deluxe and 2
-												for Suite)
+												Room ID
 											</h1>
 										</FormLabel>
 										<FormControl>
@@ -147,23 +144,51 @@ const AddRoomModal = ({ children }: AddRoomModalProps) => {
 
 							<FormField
 								control={form.control}
-								name="price"
+								name="availability"
 								render={({ field }) => (
 									<FormItem>
 										<FormLabel className="">
 											<h1 className="text-[#32393A]">
-												Price per Night (Rooms of same
-												category should have unique
-												price)
+												Room Availability
 											</h1>
 										</FormLabel>
 										<FormControl>
-											<Input
-												className="rounded-full"
-												type="number"
-												placeholder="0"
-												{...field}
-											/>
+											<div className="flex space-x-16">
+												<label className="flex items-center">
+													<input
+														type="radio"
+														value="true" // Represents Available
+														checked={
+															field.value ===
+															'true'
+														}
+														onChange={() =>
+															field.onChange(
+																'true'
+															)
+														} // Set to true
+														className="mr-2"
+													/>
+													Available
+												</label>
+												<label className="flex items-center">
+													<input
+														type="radio"
+														value="false" // Represents Not Available
+														checked={
+															field.value ===
+															'false'
+														}
+														onChange={() =>
+															field.onChange(
+																'false'
+															)
+														} // Set to false
+														className="mr-2"
+													/>
+													Not Available
+												</label>
+											</div>
 										</FormControl>
 										<FormMessage />
 									</FormItem>
@@ -186,4 +211,4 @@ const AddRoomModal = ({ children }: AddRoomModalProps) => {
 	)
 }
 
-export default AddRoomModal
+export default SetAvailabilityModal

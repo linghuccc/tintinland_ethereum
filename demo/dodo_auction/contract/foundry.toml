@@ -4,6 +4,10 @@ out = "out"
 libs = ["lib"]
 
 [rpc_endpoints]
+bsc-testnet = "${BSC_TESTNET_RPC_URL}"
 morph_holesky = "${MORPH_HOLESKY_RPC_URL}"
+
+[etherscan]
+bsc-testnet = { key = "${BSC_ETHERSCAN_KEY}" }
 
 # See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options

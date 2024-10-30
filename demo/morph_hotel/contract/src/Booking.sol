@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.24;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
@@ -7,7 +7,11 @@ contract HotelBooking {
     address public owner;
     IERC20 public token;
 
-    enum RoomCategory { Presidential, Deluxe, Suite }
+    enum RoomCategory {
+        Presidential,
+        Deluxe,
+        Suite
+    }
 
     struct Review {
         address guest;
@@ -26,8 +30,8 @@ contract HotelBooking {
     struct Booking {
         address guest;
         uint256 roomId;
-        uint256 checkInDate;
-        uint256 checkOutDate;
+        string checkInDate;
+        uint256 duration;
     }
 
     mapping(uint256 => Room) public rooms;
@@ -35,9 +39,19 @@ contract HotelBooking {
     uint256 public roomCount;
 
     event RoomAdded(uint256 roomId, string category, uint256 pricePerNight);
-    event RoomBooked(uint256 roomId, address guest, uint256 checkInDate, uint256 checkOutDate);
+    event RoomBooked(
+        uint256 roomId,
+        address guest,
+        string checkInDate,
+        uint256 duration
+    );
     event RoomAvailabilityChanged(uint256 roomId, bool isAvailable);
-    event ReviewAdded(uint256 roomId, address guest, uint8 rating, string comment);
+    event ReviewAdded(
+        uint256 roomId,
+        address guest,
+        uint8 rating,
+        string comment
+    );
     event TokensWithdrawn(address indexed owner, uint256 amount);
 
     modifier onlyOwner() {
@@ -60,7 +74,10 @@ contract HotelBooking {
         token = IERC20(_token);
     }
 
-    function addRoom(RoomCategory category, uint256 pricePerNight) public onlyOwner {
+    function addRoom(
+        RoomCategory category,
+        uint256 pricePerNight
+    ) public onlyOwner {
         uint256 roomId = roomCount++;
         Room storage room = rooms[roomId];
         room.id = roomId;
@@ -70,67 +87,104 @@ contract HotelBooking {
         emit RoomAdded(roomId, getCategoryString(category), pricePerNight);
     }
 
-    function setRoomAvailability(uint256 roomId, bool isAvailable) public onlyOwner roomExists(roomId) {
+    function setRoomAvailability(
+        uint256 roomId,
+        bool isAvailable
+    ) public onlyOwner roomExists(roomId) {
         rooms[roomId].isAvailable = isAvailable;
         emit RoomAvailabilityChanged(roomId, isAvailable);
     }
 
-    function bookRoomByCategory(RoomCategory category, uint256 checkInDate, uint256 checkOutDate) public {
-        require(checkInDate < checkOutDate, "Invalid booking dates");
+    function bookRoomByRoomId(
+        uint256 roomId,
+        string calldata checkInDate,
+        uint256 duration
+    ) public roomExists(roomId) {
+        require(duration > 0, "Invalid booking duration");
 
-        uint256 roomId = findAvailableRoomByCategory(category);
-        require(roomId != type(uint256).max, "No available room in the requested category");
+        require(rooms[roomId].isAvailable = true, "Room not available");
 
-        uint256 totalPrice = (checkOutDate - checkInDate) * rooms[roomId].pricePerNight;
-        require(token.balanceOf(msg.sender) >= totalPrice, "Insufficient token balance");
+        uint256 totalPrice = duration * rooms[roomId].pricePerNight;
+        require(
+            token.balanceOf(msg.sender) >= totalPrice,
+            "Insufficient token balance"
+        );
 
-        require(token.transferFrom(msg.sender, address(this), totalPrice), "Token transfer failed");
+        require(
+            token.transferFrom(msg.sender, address(this), totalPrice),
+            "Token transfer failed"
+        );
 
         roomBookings[roomId] = Booking({
             guest: msg.sender,
             roomId: roomId,
             checkInDate: checkInDate,
-            checkOutDate: checkOutDate
+            duration: duration
         });
 
         rooms[roomId].isAvailable = false;
-        emit RoomBooked(roomId, msg.sender, checkInDate, checkOutDate);
+        emit RoomBooked(roomId, msg.sender, checkInDate, duration);
     }
 
-    function addReview(uint256 roomId, uint8 rating, string memory comment) public roomExists(roomId) validRating(rating) {
-        rooms[roomId].reviews.push(Review({
-            guest: msg.sender,
-            rating: rating,
-            comment: comment
-        }));
+    function addReview(
+        uint256 roomId,
+        uint8 rating,
+        string memory comment
+    ) public roomExists(roomId) validRating(rating) {
+        rooms[roomId].reviews.push(
+            Review({guest: msg.sender, rating: rating, comment: comment})
+        );
         emit ReviewAdded(roomId, msg.sender, rating, comment);
     }
 
-    function findAvailableRoomByCategory(RoomCategory category) internal view returns (uint256) {
-        for (uint256 i = 0; i < roomCount; i++) {
-            if (rooms[i].category == category && rooms[i].isAvailable) {
-                return rooms[i].id;
-            }
-        }
-        return type(uint256).max; // Return a max value to indicate no available room
-    }
-
-    function getRoomDetails(uint256 roomId) public view roomExists(roomId) returns (
-        string memory category, uint256 pricePerNight, bool isAvailable, Review[] memory reviews
-    ) {
+    function getRoomDetails(
+        uint256 roomId
+    )
+        public
+        view
+        roomExists(roomId)
+        returns (
+            string memory category,
+            uint256 pricePerNight,
+            bool isAvailable,
+            Review[] memory reviews
+        )
+    {
         Room memory room = rooms[roomId];
-        return (getCategoryString(room.category), room.pricePerNight, room.isAvailable, room.reviews);
+        return (
+            getCategoryString(room.category),
+            room.pricePerNight,
+            room.isAvailable,
+            room.reviews
+        );
     }
 
-    function getBookingDetails(uint256 roomId) public view roomExists(roomId) returns (
-        address guest, uint256 checkInDate, uint256 checkOutDate, string memory category
-    ) {
+    function getBookingDetails(
+        uint256 roomId
+    )
+        public
+        view
+        roomExists(roomId)
+        returns (
+            address guest,
+            string memory checkInDate,
+            uint256 duration,
+            string memory category
+        )
+    {
         Booking memory booking = roomBookings[roomId];
         Room memory room = rooms[roomId];
-        return (booking.guest, booking.checkInDate, booking.checkOutDate, getCategoryString(room.category));
+        return (
+            booking.guest,
+            booking.checkInDate,
+            booking.duration,
+            getCategoryString(room.category)
+        );
     }
 
-    function getCategoryString(RoomCategory category) internal pure returns (string memory) {
+    function getCategoryString(
+        RoomCategory category
+    ) internal pure returns (string memory) {
         if (category == RoomCategory.Presidential) {
             return "Presidential";
         } else if (category == RoomCategory.Deluxe) {
@@ -148,8 +202,12 @@ contract HotelBooking {
         }
         return allRooms;
     }
+
     function withdrawTokens(uint256 amount) public onlyOwner {
-        require(token.balanceOf(address(this)) >= amount, "Insufficient balance in contract");
+        require(
+            token.balanceOf(address(this)) >= amount,
+            "Insufficient balance in contract"
+        );
         require(token.transfer(owner, amount), "Token transfer failed");
         emit TokensWithdrawn(owner, amount);
     }

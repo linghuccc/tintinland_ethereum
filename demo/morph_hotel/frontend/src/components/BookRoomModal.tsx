@@ -9,7 +9,13 @@ import {
 	AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
 import { useEffect } from 'react'
-import { bookingAbi, bookingAddress } from '@/constants'
+import {
+	tokenAbi,
+	tokenAddress,
+	bookingAbi,
+	bookingAddress,
+	getCategoryLabel,
+} from '@/constants'
 import { toast } from 'sonner'
 import {
 	Form,
@@ -26,12 +32,13 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { parseUnits } from 'viem'
 
-interface AddRoomModalProps {
+interface BookRoomModalProps {
 	children: React.ReactNode
+	room: any
 }
-const AddRoomModal = ({ children }: AddRoomModalProps) => {
+
+const BookRoomModal: React.FC<BookRoomModalProps> = ({ children, room }) => {
 	const {
 		data: hash,
 		error,
@@ -66,35 +73,68 @@ const AddRoomModal = ({ children }: AddRoomModalProps) => {
 	}, [isConfirming, isConfirmed, error, hash])
 
 	const formSchema = z.object({
-		category: z.any(),
-		price: z.any(),
+		checkInDate: z.string().min(1),
+		duration: z.any(),
 	})
+
+	// Get today's date formatted as YYYY-MM-DD
+	const today = new Date()
+	const formattedToday = today.toISOString().split('T')[0]
 
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
-			category: 0,
-			price: 0,
+			checkInDate: formattedToday,
+			duration: 3,
 		},
 	})
 
-	const AddRoom = async (data: z.infer<typeof formSchema>) => {
-		console.log(data)
+	const BookRoom = async (data: z.infer<typeof formSchema>) => {
+		// console.log(data.checkInDate)
+		// console.log(data.duration)
+		// Convert duration from string to number
+		const duration = Number(data.duration)
+		// Validate the converted duration
+		if (duration < 1) {
+			toast.error('Duration can not be less than 1')
+			return
+		}
+		if (duration > 100) {
+			toast.error('Duration can not be more than 100')
+			return
+		}
+
 		try {
-			const priceInWei = parseUnits(data.price.toString(), 18) // Token has 18 decimals
-
-			const addRoomTx = await writeContractAsync({
-				address: bookingAddress,
-				abi: bookingAbi,
-
-				functionName: 'addRoom',
-				args: [data.category, priceInWei],
+			const tokenApprovalTx = await writeContractAsync({
+				abi: tokenAbi,
+				address: tokenAddress,
+				functionName: 'approve',
+				args: [bookingAddress, room.pricePerNight * BigInt(duration)],
 			})
 
-			console.log('room transaction hash:', addRoomTx)
+			console.log('token approval hash:', tokenApprovalTx)
+
+			// Wait for the token approval transaction to be confirmed
+			const provider = new ethers.providers.Web3Provider(window.ethereum)
+			const receipt = await provider.waitForTransaction(tokenApprovalTx)
+
+			if (receipt.status === 1) {
+				console.log('Token approval transaction confirmed')
+
+				// Proceed with booking the room only after successful token approval
+				const bookRoomTx = await writeContractAsync({
+					abi: bookingAbi,
+					address: bookingAddress,
+					functionName: 'bookRoomByRoomId',
+					args: [room.id, data.checkInDate, duration],
+				})
+
+				console.log('room booking hash:', bookRoomTx)
+			} else {
+				console.error('Token approval transaction failed')
+			}
 		} catch (err: any) {
 			toast.error('Transaction Failed: ' + err.message)
-			console.log('Transaction Failed: ' + err.message)
 		}
 	}
 
@@ -110,33 +150,47 @@ const AddRoomModal = ({ children }: AddRoomModalProps) => {
 							</AlertDialogCancel>
 						</div>
 						<div className="flex items-center gap-6 justify-center">
-							<h1>Add a Room</h1>
+							<h1>Book Room</h1>
 						</div>
 					</AlertDialogTitle>
 				</AlertDialogHeader>
 				<div>
 					<Form {...form}>
 						<form
-							onSubmit={form.handleSubmit(AddRoom)}
+							onSubmit={form.handleSubmit(BookRoom)}
 							className="space-y-8"
 						>
+							<div>
+								<FormLabel className="">
+									<h1 className="text-[#32393A]">
+										Room Category:{' '}
+										{getCategoryLabel(room.category)}
+									</h1>
+								</FormLabel>
+							</div>
+
+							<div>
+								<FormLabel className="">
+									<h1 className="text-[#32393A]">
+										Room ID: {room.id.toString()}
+									</h1>
+								</FormLabel>
+							</div>
+
 							<FormField
 								control={form.control}
-								name="category"
+								name="checkInDate"
 								render={({ field }) => (
 									<FormItem>
 										<FormLabel className="">
 											<h1 className="text-[#32393A]">
-												Room Category (0-2) (0 for
-												Presidential, 1 for Deluxe and 2
-												for Suite)
+												Check-In Date
 											</h1>
 										</FormLabel>
 										<FormControl>
 											<Input
 												className="rounded-full"
-												type="number"
-												placeholder="0"
+												type="date"
 												{...field}
 											/>
 										</FormControl>
@@ -147,21 +201,19 @@ const AddRoomModal = ({ children }: AddRoomModalProps) => {
 
 							<FormField
 								control={form.control}
-								name="price"
+								name="duration"
 								render={({ field }) => (
 									<FormItem>
 										<FormLabel className="">
 											<h1 className="text-[#32393A]">
-												Price per Night (Rooms of same
-												category should have unique
-												price)
+												Duration (Days)
 											</h1>
 										</FormLabel>
 										<FormControl>
 											<Input
 												className="rounded-full"
 												type="number"
-												placeholder="0"
+												placeholder="3"
 												{...field}
 											/>
 										</FormControl>
@@ -186,4 +238,4 @@ const AddRoomModal = ({ children }: AddRoomModalProps) => {
 	)
 }
 
-export default AddRoomModal
+export default BookRoomModal
