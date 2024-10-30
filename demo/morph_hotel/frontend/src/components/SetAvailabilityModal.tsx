@@ -153,7 +153,7 @@ const SetAvailabilityModal = ({ children }: SetAvailabilityModalProps) => {
 											</h1>
 										</FormLabel>
 										<FormControl>
-											<div className="flex space-x-16">
+											<div className="flex justify-between">
 												<label className="flex items-center">
 													<input
 														type="radio"
