@@ -90,6 +90,7 @@ const BookRoomModal: React.FC<BookRoomModalProps> = ({ children, room }) => {
 	})
 
 	const BookRoom = async (data: z.infer<typeof formSchema>) => {
+		console.log(room.id)
 		// console.log(data.checkInDate)
 		// console.log(data.duration)
 		// Convert duration from string to number
