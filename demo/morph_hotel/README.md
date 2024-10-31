@@ -16,5 +16,5 @@ contract 文件夹：使用 Foundry 框架，部署在 Morph Holesky Testnet。
 
 | 合约               | 地址                                                                                                                                              |
 | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Token 合约         | [0x2FdA6C948f815Cf9D2492B60D69f1F9FBFAF0EF2](https://explorer-holesky.morphl2.io/address/0x2FdA6C948f815Cf9D2492B60D69f1F9FBFAF0EF2?tab=contract) |
-| Hotel Booking 合约 | [0x0B3C2f534D33d16B7B0e89056ECb46C1cA966369](https://explorer-holesky.morphl2.io/address/0x0B3C2f534D33d16B7B0e89056ECb46C1cA966369?tab=contract) |
+| Token 合约         | [0x3694b20E27246725B472a0cB601D642f057e8fde](https://explorer-holesky.morphl2.io/address/0x3694b20E27246725B472a0cB601D642f057e8fde?tab=contract) |
+| Hotel Booking 合约 | [0xE82b4A48A333b09Cf279494A24B02A58dc104c3c](https://explorer-holesky.morphl2.io/address/0xE82b4A48A333b09Cf279494A24B02A58dc104c3c?tab=contract) |

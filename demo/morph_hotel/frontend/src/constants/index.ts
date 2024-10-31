@@ -2,8 +2,8 @@ import { tokenAbi } from './tokenAbi'
 import { bookingAbi } from './bookingAbi'
 
 const adminAddress = '0x41F669e9c3dCDBf71d2C60843BfDC47bCE257081'
-const tokenAddress = '0x2FdA6C948f815Cf9D2492B60D69f1F9FBFAF0EF2'
-const bookingAddress = '0x0B3C2f534D33d16B7B0e89056ECb46C1cA966369'
+const tokenAddress = '0x3694b20E27246725B472a0cB601D642f057e8fde'
+const bookingAddress = '0xE82b4A48A333b09Cf279494A24B02A58dc104c3c'
 
 const getImageByCategory = (category: string) => {
 	switch (category) {
