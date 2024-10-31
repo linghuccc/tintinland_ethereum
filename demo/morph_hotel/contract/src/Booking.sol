@@ -78,7 +78,8 @@ contract HotelBooking {
         RoomCategory category,
         uint256 pricePerNight
     ) public onlyOwner {
-        uint256 roomId = roomCount++;
+        roomCount++;
+        uint256 roomId = roomCount;
         Room storage room = rooms[roomId];
         room.id = roomId;
         room.category = category;

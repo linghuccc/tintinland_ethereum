@@ -1,4 +1,4 @@
-### DoDo：公开拍卖
+## ✨ DoDo：公开拍卖
 
 每个购买者在拍卖期间发送他们的竞标到智能合约。 竞标包括发送资金，以便将购买者与他们的竞标绑定。 如果最高出价被提高，之前的出价者就可以拿回他们的竞标资金。 竞价期结束后，出售人可以手动调用合约，收到他们的收益。
 
@@ -14,6 +14,6 @@
 
 5 竞拍冷却机制(为防止竞拍者连续快速出价，可以设置一个竞拍冷却期。每个出价者在一次出价后，需要等待一段时间后才能再次出价，让拍卖过程更具策略性。)
 
-### 代码实现
+## 🚀 代码实现
 
-使用 Foundry 框架，已经部署在 Morph Holesky Testnet: [0xeB96a55Fec508c2F7f51116576F81E7c6c7793CC](https://explorer-holesky.morphl2.io/address/0xeB96a55Fec508c2F7f51116576F81E7c6c7793CC?tab=contract)
+使用 Foundry 框架，部署在 Morph Holesky Testnet: [0xeB96a55Fec508c2F7f51116576F81E7c6c7793CC](https://explorer-holesky.morphl2.io/address/0xeB96a55Fec508c2F7f51116576F81E7c6c7793CC?tab=contract)

@@ -105,14 +105,14 @@ const BookRoomModal: React.FC<BookRoomModalProps> = ({ children, room }) => {
 		}
 
 		try {
-			// const tokenApprovalTx = await writeContractAsync({
-			// 	abi: tokenAbi,
-			// 	address: tokenAddress,
-			// 	functionName: 'approve',
-			// 	args: [bookingAddress, room.pricePerNight * BigInt(duration)],
-			// })
+			const tokenApprovalTx = await writeContractAsync({
+				abi: tokenAbi,
+				address: tokenAddress,
+				functionName: 'approve',
+				args: [bookingAddress, room.pricePerNight * BigInt(duration)],
+			})
 
-			// console.log('token approval hash:', tokenApprovalTx)
+			console.log('token approval hash:', tokenApprovalTx)
 
 			// Wait for the token approval transaction to be confirmed
 			// const provider = new ethers.providers.Web3Provider(window.ethereum)
