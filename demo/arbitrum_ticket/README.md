@@ -7,3 +7,10 @@
 ## 🚀 代码实现
 
 使用 Hardhat 框架，部署在 Sepolia Testnet 和 Arbitrum Sepolia Testnet。
+
+完成以下类型的数据 layer1-》layer2 的跨链调用：
+
+-   boolean
+-   uint256
+-   address
+-   string
