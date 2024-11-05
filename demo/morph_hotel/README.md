@@ -4,7 +4,7 @@ https://morph.ghost.io/developer-guide-building-a-decentralized-hotel-booking-sy
 
 ## 🚀 在线预览
 
-网站已上线 Vercel，请浏览 https://morphhotel.vercel.app/。
+网站已上线 Vercel，请浏览 https://morphhotel.vercel.app/
 
 ### 前端代码
 
