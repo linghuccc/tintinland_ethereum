@@ -10,9 +10,23 @@ https://morph.ghost.io/developer-guide-building-a-decentralized-hotel-booking-sy
 
 frontend 文件夹：使用 morph starter kit。
 
+更新了以下功能：
+
+-   网页 icon；
+-   房间图片显示界面（调整图片大小，增加 Room ID 显示、代币类型显示）；
+-   pop up box 界面（下拉菜单、Radio button、日期选择菜单，将 Room ID 设为不可更改）
+
+添加 / 完善了以下功能：
+
+-   区分管理员和普通用户的界面；
+-   Set Availability 的功能；
+-   Book Room 的功能（可以指定 check-in date，duration）；
+
 ### Solidity 代码
 
 contract 文件夹：使用 Foundry 框架，部署在 Morph Holesky Testnet。
+
+使用了教程中的大部分代码，根据实际 app 进行了部分修改（主要是 Book Room 部分）。
 
 | 合约               | 地址                                                                                                                                              |
 | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------- |
