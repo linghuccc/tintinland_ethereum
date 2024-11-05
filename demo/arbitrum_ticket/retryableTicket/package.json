@@ -1,0 +1,25 @@
+{
+	"name": "greeter",
+	"license": "Apache-2.0",
+	"version": "1.0.0",
+	"scripts": {
+		"build": "hardhat compile",
+		"deployL1": "hardhat run scripts/deployL1.js",
+		"deployL2": "hardhat run scripts/deployL2.js",
+		"updateL1": "hardhat run scripts/updateL1.js",
+		"show": "hardhat run scripts/show.js",
+		"demo": "hardhat run scripts/demo.js"
+	},
+	"devDependencies": {
+		"@nomicfoundation/hardhat-verify": "^2.0.11",
+		"@nomiclabs/hardhat-ethers": "^2.0.2",
+		"@nomiclabs/hardhat-etherscan": "^3.1.8",
+		"ethers": "^5.1.2",
+		"hardhat": "^2.2.0"
+	},
+	"dependencies": {
+		"@arbitrum/nitro-contracts": "v1.0.2",
+		"@arbitrum/sdk": "^v3.1.9",
+		"dotenv": "^8.2.0"
+	}
+}
