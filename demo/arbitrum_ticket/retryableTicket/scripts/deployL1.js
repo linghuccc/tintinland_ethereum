@@ -6,7 +6,7 @@ const {
   EthBridger,
   getL2Network,
 } = require('@arbitrum/sdk')
-requireEnvVariables(['PRIVATE_KEY', 'L1_SEPOLIA_RPC', 'L2_ARB_SEPOLIA_RPC', 'L1_SEPOLIA_ETHERSCAN_KEY'])
+requireEnvVariables(['PRIVATE_KEY', 'L1_SEPOLIA_RPC', 'L2_ARB_SEPOLIA_RPC'])
 
 /**
  * Set up: instantiate L1 / L2 wallets connected to providers
@@ -15,8 +15,6 @@ const walletPrivateKey = process.env.PRIVATE_KEY
 
 const l1Provider = new providers.JsonRpcProvider(process.env.L1_SEPOLIA_RPC)
 const l2Provider = new providers.JsonRpcProvider(process.env.L2_ARB_SEPOLIA_RPC)
-
-const l1EtherscanKey = process.env.L1_SEPOLIA_ETHERSCAN_KEY
 
 const l1Wallet = new Wallet(walletPrivateKey, l1Provider)
 
