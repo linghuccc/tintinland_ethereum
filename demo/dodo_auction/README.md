@@ -14,6 +14,21 @@
 
 5 竞拍冷却机制(为防止竞拍者连续快速出价，可以设置一个竞拍冷却期。每个出价者在一次出价后，需要等待一段时间后才能再次出价，让拍卖过程更具策略性。)
 
-## 🚀 代码实现
+## 🚀 在线预览
 
-使用 Foundry 框架，部署在 Morph Holesky Testnet: [0xeB96a55Fec508c2F7f51116576F81E7c6c7793CC](https://explorer-holesky.morphl2.io/address/0xeB96a55Fec508c2F7f51116576F81E7c6c7793CC?tab=contract)
+网站已上线 Vercel，请浏览 https://dodoauction.vercel.app/
+
+### 前端代码
+
+frontend 文件夹：使用 morph starter kit。
+
+### Solidity 代码
+
+contract 文件夹：使用 Foundry 框架，部署在 Morph Holesky Testnet。
+
+增加了 Contract Factory 合约，用于部署多个 Auction 合约。
+
+| 合约                  | 地址                                                                                                                                              |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Contract Factory 合约 | [0x0410420879FFEeCc5cC8933Bb6c1Aac3c49d857c](https://explorer-holesky.morphl2.io/address/0x0410420879FFEeCc5cC8933Bb6c1Aac3c49d857c?tab=contract) |
+| Auction 合约（范例）  | [0x71356af980E735DDeA8BAB512521016D77fCDfAA](https://explorer-holesky.morphl2.io/address/0x71356af980E735DDeA8BAB512521016D77fCDfAA?tab=contract) |
