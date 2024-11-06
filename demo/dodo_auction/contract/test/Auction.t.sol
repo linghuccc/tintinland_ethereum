@@ -41,6 +41,19 @@ contract PublicAuctionTest is Test {
         assertEq(auction.highestBid(), 1 ether);
     }
 
+    // 测试冷却时间限制
+    function testCooldownTime() public {
+        vm.prank(bidder1);
+        auction.bid{value: 1 ether}(); // bidder1 出价 1 ether
+
+        vm.deal(bidder1, 2 ether);
+
+        // 尝试在冷却时间内再次出价
+        vm.expectRevert("You must wait before bidding again."); // 预期 revert
+        vm.prank(bidder1);
+        auction.bid{value: 2 ether}(); // 再次出价
+    }
+
     function testHigherBid() public {
         vm.prank(bidder1);
         auction.bid{value: 1 ether}();
