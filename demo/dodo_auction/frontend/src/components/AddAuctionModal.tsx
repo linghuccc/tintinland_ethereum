@@ -20,7 +20,11 @@ import {
 	FormMessage,
 } from '@/components/ui/form'
 
-import { useWaitForTransactionReceipt, useWriteContract } from 'wagmi'
+import {
+	useAccount,
+	useWaitForTransactionReceipt,
+	useWriteContract,
+} from 'wagmi'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
@@ -31,6 +35,8 @@ interface AddAuctionModalProps {
 	children: React.ReactNode
 }
 const AddAuctionModal = ({ children }: AddAuctionModalProps) => {
+	const { address } = useAccount()
+
 	const {
 		data: hash,
 		error,
@@ -44,10 +50,16 @@ const AddAuctionModal = ({ children }: AddAuctionModalProps) => {
 		})
 
 	useEffect(() => {
+		let loadingToast: string | undefined // Declare the type of loadingToast
+
 		if (isConfirming) {
-			toast.loading('Transaction Pending')
+			loadingToast = toast.loading('Transaction Pending') as string // Use type assertion
 		}
+
 		if (isConfirmed) {
+			if (loadingToast) {
+				toast.dismiss(loadingToast) // Dismiss the loading toast
+			}
 			toast.success('Transaction Successful', {
 				action: {
 					label: 'View on Etherscan',
@@ -60,22 +72,37 @@ const AddAuctionModal = ({ children }: AddAuctionModalProps) => {
 			})
 		}
 		if (error) {
+			if (loadingToast) {
+				toast.dismiss(loadingToast) // Dismiss the loading toast
+			}
 			toast.error('Transaction Failed')
+		}
+
+		// Cleanup function to dismiss the loading toast if the component unmounts
+		return () => {
+			if (loadingToast) {
+				toast.dismiss(loadingToast)
+			}
 		}
 	}, [isConfirming, isConfirmed, error, hash])
 
 	const formSchema = z.object({
-		beneficiary: z.any(),
+		title: z.string().min(1),
+		imageUrl: z.string().min(1),
 		biddingTime: z.any(),
 		cooldownTime: z.any(),
+		beneficiary: z.any(),
 	})
 
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
-			beneficiary: '',
-			biddingTime: 0,
-			cooldownTime: 0,
+			title: '',
+			imageUrl:
+				'https://img.freepik.com/free-photo/house-isolated-field_1303-23773.jpg',
+			biddingTime: 86400,
+			cooldownTime: 30,
+			beneficiary: address?.toString() || '',
 		},
 	})
 
@@ -86,7 +113,13 @@ const AddAuctionModal = ({ children }: AddAuctionModalProps) => {
 				address: contractFactory,
 				abi: contractFactoryAbi,
 				functionName: 'createAuction',
-				args: [data.beneficiary, data.biddingTime, data.cooldownTime],
+				args: [
+					data.beneficiary,
+					data.title,
+					data.imageUrl,
+					data.biddingTime,
+					data.cooldownTime,
+				],
 			})
 
 			console.log('New auction transaction hash:', addAuctionTx)
@@ -120,18 +153,40 @@ const AddAuctionModal = ({ children }: AddAuctionModalProps) => {
 						>
 							<FormField
 								control={form.control}
-								name="beneficiary"
+								name="title"
 								render={({ field }) => (
 									<FormItem>
 										<FormLabel className="">
 											<h1 className="text-[#32393A]">
-												Property beneficiary
+												Auction title
 											</h1>
 										</FormLabel>
 										<FormControl>
 											<Input
 												className="rounded-full"
-												placeholder="0x7E60F5E4544F8817A1D49bD3bB14c1EE2E7537cC"
+												placeholder=""
+												{...field}
+											/>
+										</FormControl>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+
+							<FormField
+								control={form.control}
+								name="imageUrl"
+								render={({ field }) => (
+									<FormItem>
+										<FormLabel className="">
+											<h1 className="text-[#32393A]">
+												Image URL
+											</h1>
+										</FormLabel>
+										<FormControl>
+											<Input
+												className="rounded-full"
+												placeholder="https://img.freepik.com/free-photo/house-isolated-field_1303-23773.jpg"
 												{...field}
 											/>
 										</FormControl>
@@ -154,7 +209,7 @@ const AddAuctionModal = ({ children }: AddAuctionModalProps) => {
 											<Input
 												className="rounded-full"
 												type="number"
-												placeholder="180"
+												placeholder="86400"
 												{...field}
 											/>
 										</FormControl>
@@ -178,6 +233,30 @@ const AddAuctionModal = ({ children }: AddAuctionModalProps) => {
 												className="rounded-full"
 												type="number"
 												placeholder="30"
+												{...field}
+											/>
+										</FormControl>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+
+							<FormField
+								control={form.control}
+								name="beneficiary"
+								render={({ field }) => (
+									<FormItem>
+										<FormLabel className="">
+											<h1 className="text-[#32393A]">
+												Beneficiary
+											</h1>
+										</FormLabel>
+										<FormControl>
+											<Input
+												className="rounded-full"
+												placeholder={
+													address?.toString() || ''
+												}
 												{...field}
 											/>
 										</FormControl>

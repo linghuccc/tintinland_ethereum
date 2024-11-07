@@ -7,7 +7,7 @@ import AuctionCard from '@/components/AuctionCard'
 import AddAuctionModal from '@/components/AddAuctionModal'
 
 export default function Home() {
-	const [auctions, setAuctions] = useState<any>([])
+	const [auctionAddresses, setAuctionAddresses] = useState<any>([])
 
 	const { data: auctionData } = useReadContract({
 		abi: contractFactoryAbi,
@@ -17,7 +17,7 @@ export default function Home() {
 
 	useEffect(() => {
 		if (auctionData) {
-			setAuctions(auctionData)
+			setAuctionAddresses(auctionData)
 		}
 	}, [auctionData])
 
@@ -34,11 +34,14 @@ export default function Home() {
 			<div className="container mx-auto py-4">
 				<h1 className="text-2xl font-bold mb-6">Auctions</h1>
 				<div className="flex gap-4 flex-wrap">
-					{auctions.length > 0 ? (
-						auctions
+					{auctionAddresses.length > 0 ? (
+						auctionAddresses
 							.toReversed()
-							.map((auction: any, index: number) => (
-								<AuctionCard key={index} auction={auction} />
+							.map((auctionAddress: any, index: number) => (
+								<AuctionCard
+									key={index}
+									auctionAddress={auctionAddress}
+								/>
 							))
 					) : (
 						<div>

@@ -3,6 +3,8 @@ pragma solidity ^0.8.24;
 
 contract PublicAuction {
     address public beneficiary; // 受益人地址
+    string public title;
+    string public imageUrl;
     uint256 public auctionEndTime; // 竞拍结束时间
     uint256 public cooldownTime; // 竞拍冷却时间
     address public highestBidder; // 当前最高的竞标者地址
@@ -19,9 +21,13 @@ contract PublicAuction {
     // 构造函数，初始化受益人、竞拍时间和冷却时间
     constructor(
         address _beneficiary,
+        string memory _title,
+        string memory _imageUrl,
         uint256 _biddingTime,
         uint256 _cooldownTime
     ) {
+        title = _title;
+        imageUrl = _imageUrl;
         beneficiary = _beneficiary; // 设置受益人
         auctionEndTime = block.timestamp + _biddingTime; // 设置竞拍结束时间
         cooldownTime = _cooldownTime; // 设置冷却时间

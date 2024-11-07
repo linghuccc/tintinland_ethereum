@@ -9,12 +9,16 @@ contract ContractFactory {
     // 创建新的竞拍合约
     function createAuction(
         address _beneficiary,
+        string memory _title,
+        string memory _imageUrl,
         uint256 _biddingTime,
         uint256 _cooldownTime
     ) external returns (PublicAuction) {
         // 部署新的 PublicAuction 合约
         PublicAuction newAuction = new PublicAuction(
             _beneficiary,
+            _title,
+            _imageUrl,
             _biddingTime,
             _cooldownTime
         );

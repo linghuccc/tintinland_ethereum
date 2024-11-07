@@ -3,6 +3,8 @@ export const publicAuctionAbi = [
 		type: 'constructor',
 		inputs: [
 			{ name: '_beneficiary', type: 'address', internalType: 'address' },
+			{ name: '_title', type: 'string', internalType: 'string' },
+			{ name: '_imageUrl', type: 'string', internalType: 'string' },
 			{ name: '_biddingTime', type: 'uint256', internalType: 'uint256' },
 			{ name: '_cooldownTime', type: 'uint256', internalType: 'uint256' },
 		],
@@ -66,6 +68,13 @@ export const publicAuctionAbi = [
 	},
 	{
 		type: 'function',
+		name: 'imageUrl',
+		inputs: [],
+		outputs: [{ name: '', type: 'string', internalType: 'string' }],
+		stateMutability: 'view',
+	},
+	{
+		type: 'function',
 		name: 'lastBidTime',
 		inputs: [{ name: '', type: 'address', internalType: 'address' }],
 		outputs: [{ name: '', type: 'uint256', internalType: 'uint256' }],
@@ -76,6 +85,13 @@ export const publicAuctionAbi = [
 		name: 'pendingReturns',
 		inputs: [{ name: '', type: 'address', internalType: 'address' }],
 		outputs: [{ name: '', type: 'uint256', internalType: 'uint256' }],
+		stateMutability: 'view',
+	},
+	{
+		type: 'function',
+		name: 'title',
+		inputs: [],
+		outputs: [{ name: '', type: 'string', internalType: 'string' }],
 		stateMutability: 'view',
 	},
 	{

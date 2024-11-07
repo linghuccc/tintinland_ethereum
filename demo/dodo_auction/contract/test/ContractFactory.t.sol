@@ -8,6 +8,9 @@ import {PublicAuction} from "../src/Auction.sol";
 contract ContractFactoryTest is Test {
     ContractFactory factory; // 合约工厂实例
     address beneficiary = address(0x123); // 受益人地址
+    string title = "auction test";
+    string imageUrl =
+        "https://img.freepik.com/free-photo/modern-country-houses-construction_1385-16.jpg";
 
     // 在每个测试之前部署一个新的合约工厂
     function setUp() public {
@@ -22,6 +25,8 @@ contract ContractFactoryTest is Test {
         // 创建一个新的竞拍合约
         PublicAuction auction = factory.createAuction(
             beneficiary,
+            title,
+            imageUrl,
             biddingTime,
             cooldownTime
         );
@@ -40,8 +45,20 @@ contract ContractFactoryTest is Test {
         uint256 cooldownTime = 1 hours;
 
         // 创建两个竞拍合约
-        factory.createAuction(beneficiary, biddingTime, cooldownTime);
-        factory.createAuction(beneficiary, biddingTime, cooldownTime);
+        factory.createAuction(
+            beneficiary,
+            title,
+            imageUrl,
+            biddingTime,
+            cooldownTime
+        );
+        factory.createAuction(
+            beneficiary,
+            title,
+            imageUrl,
+            biddingTime,
+            cooldownTime
+        );
 
         // 获取已创建的竞拍合约数组
         PublicAuction[] memory auctions = factory.getAuctions();

@@ -22,6 +22,16 @@
 
 frontend 文件夹：使用 morph starter kit。
 
+已实现的功能：
+
+-   拍卖发起人：发布新拍卖；
+-   拍卖参与者：对特定拍卖进行竞价；
+
+待实现的功能：
+
+-   拍卖参与者：提取竞价失败的资金；
+-   拍卖发起人：结束拍卖，提取最高出价的资金；
+
 ### Solidity 代码
 
 contract 文件夹：使用 Foundry 框架，部署在 Morph Holesky Testnet。
@@ -30,5 +40,5 @@ contract 文件夹：使用 Foundry 框架，部署在 Morph Holesky Testnet。
 
 | 合约                  | 地址                                                                                                                                              |
 | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Contract Factory 合约 | [0x0410420879FFEeCc5cC8933Bb6c1Aac3c49d857c](https://explorer-holesky.morphl2.io/address/0x0410420879FFEeCc5cC8933Bb6c1Aac3c49d857c?tab=contract) |
-| Auction 合约（范例）  | [0x71356af980E735DDeA8BAB512521016D77fCDfAA](https://explorer-holesky.morphl2.io/address/0x71356af980E735DDeA8BAB512521016D77fCDfAA?tab=contract) |
+| Contract Factory 合约 | [0x9d77341871358892378427e293ED4Bbe0493b9f7](https://explorer-holesky.morphl2.io/address/0x9d77341871358892378427e293ED4Bbe0493b9f7?tab=contract) |
+| Auction 合约（范例）  | [0x92c8d7394178aaD687374638ED30fA343D7D144a](https://explorer-holesky.morphl2.io/address/0x92c8d7394178aaD687374638ED30fA343D7D144a?tab=contract) |

@@ -17,6 +17,8 @@ export const contractFactoryAbi = [
 		name: 'createAuction',
 		inputs: [
 			{ name: '_beneficiary', type: 'address', internalType: 'address' },
+			{ name: '_title', type: 'string', internalType: 'string' },
+			{ name: '_imageUrl', type: 'string', internalType: 'string' },
 			{ name: '_biddingTime', type: 'uint256', internalType: 'uint256' },
 			{ name: '_cooldownTime', type: 'uint256', internalType: 'uint256' },
 		],

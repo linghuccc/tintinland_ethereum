@@ -7,6 +7,10 @@ import {PublicAuction} from "../src/Auction.sol";
 contract PublicAuctionTest is Test {
     PublicAuction auction;
     address beneficiary = address(0x999);
+    string title = "auction test";
+    string imageUrl =
+        "https://img.freepik.com/free-photo/modern-country-houses-construction_1385-16.jpg";
+
     address bidder1 = address(0x123);
     address bidder2 = address(0x456);
 
@@ -14,13 +18,21 @@ contract PublicAuctionTest is Test {
         // Make block.timestamp > cooldownTime
         vm.warp(block.timestamp + 1 days);
 
-        auction = new PublicAuction(beneficiary, 1 days, 1 hours);
+        auction = new PublicAuction(
+            beneficiary,
+            title,
+            imageUrl,
+            1 days,
+            1 hours
+        );
         vm.deal(bidder1, 1 ether);
         vm.deal(bidder2, 2 ether);
     }
 
     function testInitialSetup() public view {
         assertEq(auction.beneficiary(), beneficiary);
+        assertEq(auction.title(), title);
+        assertEq(auction.imageUrl(), imageUrl);
         assertEq(auction.highestBid(), 0);
         assertEq(auction.auctionFinalized(), false);
     }
