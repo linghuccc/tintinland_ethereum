@@ -89,7 +89,7 @@ const BidModal = ({ children, auction }: BidModalProps) => {
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
-			myOffer: Number(auction.highestBid) || 0.01,
+			myOffer: Number(auction.highestBid) || 0,
 		},
 	})
 

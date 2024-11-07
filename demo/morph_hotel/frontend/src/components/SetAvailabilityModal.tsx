@@ -44,10 +44,16 @@ const SetAvailabilityModal = ({ children }: SetAvailabilityModalProps) => {
 		})
 
 	useEffect(() => {
+		let loadingToast: string | undefined // Declare the type of loadingToast
+
 		if (isConfirming) {
-			toast.loading('Transaction Pending')
+			loadingToast = toast.loading('Transaction Pending') as string // Use type assertion
 		}
+
 		if (isConfirmed) {
+			if (loadingToast) {
+				toast.dismiss(loadingToast) // Dismiss the loading toast
+			}
 			toast.success('Transaction Successful', {
 				action: {
 					label: 'View on Etherscan',
@@ -60,7 +66,17 @@ const SetAvailabilityModal = ({ children }: SetAvailabilityModalProps) => {
 			})
 		}
 		if (error) {
+			if (loadingToast) {
+				toast.dismiss(loadingToast) // Dismiss the loading toast
+			}
 			toast.error('Transaction Failed')
+		}
+
+		// Cleanup function to dismiss the loading toast if the component unmounts
+		return () => {
+			if (loadingToast) {
+				toast.dismiss(loadingToast)
+			}
 		}
 	}, [isConfirming, isConfirmed, error, hash])
 
