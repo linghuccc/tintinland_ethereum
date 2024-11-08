@@ -172,7 +172,7 @@ const AddReviewModal: React.FC<AddReviewModalProps> = ({
 											<Input
 												className="rounded-full"
 												type="number"
-												placeholder="0"
+												placeholder="Please enter rating here"
 												{...field}
 											/>
 										</FormControl>
@@ -194,7 +194,7 @@ const AddReviewModal: React.FC<AddReviewModalProps> = ({
 										<FormControl>
 											<Input
 												className="rounded-full"
-												placeholder="Nice"
+												placeholder="Please enter comment here"
 												{...field}
 											/>
 										</FormControl>

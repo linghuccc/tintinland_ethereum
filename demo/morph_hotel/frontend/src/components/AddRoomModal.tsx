@@ -180,7 +180,7 @@ const AddRoomModal = ({ children }: AddRoomModalProps) => {
 											<Input
 												className="rounded-full"
 												type="number"
-												placeholder="0"
+												placeholder="Please enter price here"
 												{...field}
 											/>
 										</FormControl>

@@ -90,7 +90,7 @@ const BookRoomModal: React.FC<BookRoomModalProps> = ({ children, room }) => {
 
 	const formSchema = z.object({
 		checkInDate: z.string().min(1),
-		duration: z.any(),
+		duration: z.number(),
 	})
 
 	// Get today's date formatted as YYYY-MM-DD
@@ -230,7 +230,7 @@ const BookRoomModal: React.FC<BookRoomModalProps> = ({ children, room }) => {
 											<Input
 												className="rounded-full"
 												type="number"
-												placeholder="3"
+												placeholder="Please enter duration here"
 												{...field}
 											/>
 										</FormControl>

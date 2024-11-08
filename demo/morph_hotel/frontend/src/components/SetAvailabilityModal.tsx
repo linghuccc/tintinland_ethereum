@@ -81,7 +81,7 @@ const SetAvailabilityModal = ({ children }: SetAvailabilityModalProps) => {
 	}, [isConfirming, isConfirmed, error, hash])
 
 	const formSchema = z.object({
-		roomId: z.any(),
+		roomId: z.number(),
 		availability: z.any(),
 	})
 
@@ -149,7 +149,7 @@ const SetAvailabilityModal = ({ children }: SetAvailabilityModalProps) => {
 											<Input
 												className="rounded-full"
 												type="number"
-												placeholder="0"
+												placeholder="Please enter Room ID here"
 												{...field}
 											/>
 										</FormControl>
