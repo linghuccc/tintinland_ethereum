@@ -85,6 +85,10 @@ const BidModal = ({ children, auction }: BidModalProps) => {
 	const formSchema = z.object({
 		myOffer: z.number(),
 	})
+	
+console.log('auction.highestBid is', auction.highestBid)
+console.log('Number(auction.highestBid) is', Number(auction.highestBid))
+console.log('Number(auction.highestBid) || 0 is', Number(auction.highestBid) || 0)
 
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
@@ -172,10 +176,7 @@ const BidModal = ({ children, auction }: BidModalProps) => {
 												<Input
 													className="rounded-full w-40 font-bold text-xl text-[#32393A] text-center"
 													type="number"
-													placeholder={
-														auction.highestBid
-													}
-													{...field}
+													placeholder="Bid Amount"
 												/>
 											</FormControl>
 											<FormLabel className="ml-4">

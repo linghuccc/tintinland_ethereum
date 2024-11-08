@@ -89,17 +89,21 @@ const AddAuctionModal = ({ children }: AddAuctionModalProps) => {
 	const formSchema = z.object({
 		title: z.string().min(1),
 		imageUrl: z.string().min(1),
-		biddingTime: z.any(),
-		cooldownTime: z.any(),
-		beneficiary: z.any(),
+		biddingTime: z.number(),
+		cooldownTime: z.number(),
+		beneficiary: z.string().min(1),
 	})
+
+	console.log('address is', address)
+	console.log('address?.toString() is', address?.toString())
+	console.log("address?.toString() || '' is", address?.toString() || '')
 
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
 			title: '',
 			imageUrl:
-				'https://img.freepik.com/free-photo/house-isolated-field_1303-23773.jpg',
+				'https://img.freepik.com/premium-photo/home-architecture-design-colonial-style-with-center-entrance_31965-172913.jpg',
 			biddingTime: 86400,
 			cooldownTime: 30,
 			beneficiary: address?.toString() || '',
@@ -164,7 +168,7 @@ const AddAuctionModal = ({ children }: AddAuctionModalProps) => {
 										<FormControl>
 											<Input
 												className="rounded-full"
-												placeholder=""
+												placeholder="Please enter title here"
 												{...field}
 											/>
 										</FormControl>
@@ -186,7 +190,7 @@ const AddAuctionModal = ({ children }: AddAuctionModalProps) => {
 										<FormControl>
 											<Input
 												className="rounded-full"
-												placeholder="https://img.freepik.com/free-photo/house-isolated-field_1303-23773.jpg"
+												placeholder="Please enter image URL here"
 												{...field}
 											/>
 										</FormControl>
@@ -209,7 +213,7 @@ const AddAuctionModal = ({ children }: AddAuctionModalProps) => {
 											<Input
 												className="rounded-full"
 												type="number"
-												placeholder="86400"
+												placeholder="Please enter bidding time (in secondes) here"
 												{...field}
 											/>
 										</FormControl>
@@ -232,7 +236,7 @@ const AddAuctionModal = ({ children }: AddAuctionModalProps) => {
 											<Input
 												className="rounded-full"
 												type="number"
-												placeholder="30"
+												placeholder="Please enter cooldown time (in secondes) here"
 												{...field}
 											/>
 										</FormControl>
@@ -254,9 +258,7 @@ const AddAuctionModal = ({ children }: AddAuctionModalProps) => {
 										<FormControl>
 											<Input
 												className="rounded-full"
-												placeholder={
-													address?.toString() || ''
-												}
+												placeholder="Please enter beneficiary address here"
 												{...field}
 											/>
 										</FormControl>
