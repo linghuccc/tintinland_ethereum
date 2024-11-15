@@ -8,7 +8,7 @@ import {
 	AlertDialogTitle,
 	AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
-import { useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { bookingAbi, bookingAddress } from '@/constants'
 import { toast } from 'sonner'
 import {
@@ -30,8 +30,14 @@ import { parseUnits } from 'viem'
 
 interface AddRoomModalProps {
 	children: React.ReactNode
+	onSuccess: () => void
 }
-const AddRoomModal = ({ children }: AddRoomModalProps) => {
+const AddRoomModal = ({ children, onSuccess }: AddRoomModalProps) => {
+	const [isOpen, setIsOpen] = useState(false)
+
+	// const handleOpen = () => setIsOpen(true)
+	const handleClose = () => setIsOpen(false)
+
 	const {
 		data: hash,
 		error,
@@ -65,7 +71,9 @@ const AddRoomModal = ({ children }: AddRoomModalProps) => {
 					},
 				},
 			})
+			setIsOpen(false)
 		}
+
 		if (error) {
 			if (loadingToast) {
 				toast.dismiss(loadingToast) // Dismiss the loading toast
@@ -89,13 +97,13 @@ const AddRoomModal = ({ children }: AddRoomModalProps) => {
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
-			category: 0,
-			price: 0,
+			category: undefined,
+			price: undefined,
 		},
 	})
 
 	const AddRoom = async (data: z.infer<typeof formSchema>) => {
-		console.log(data)
+		// console.log(data)
 		try {
 			const priceInWei = parseUnits(data.price.toString(), 18) // Token has 18 decimals
 
@@ -108,6 +116,7 @@ const AddRoomModal = ({ children }: AddRoomModalProps) => {
 			})
 
 			console.log('room transaction hash:', addRoomTx)
+			onSuccess()
 		} catch (err: any) {
 			toast.error('Transaction Failed: ' + err.message)
 			console.log('Transaction Failed: ' + err.message)
@@ -115,22 +124,25 @@ const AddRoomModal = ({ children }: AddRoomModalProps) => {
 	}
 
 	return (
-		<AlertDialog>
+		<AlertDialog open={isOpen} onOpenChange={setIsOpen}>
 			<AlertDialogTrigger asChild>{children}</AlertDialogTrigger>
 			<AlertDialogContent>
 				<AlertDialogHeader>
 					<AlertDialogTitle>
 						<div className="flex items-center gap-6 justify-end h-8">
-							<AlertDialogCancel className="text-gray-600 hover:text-gray-900 border-none">
+							<AlertDialogCancel
+								onClick={handleClose}
+								className="text-gray-600 hover:text-gray-900 border-none"
+							>
 								&times; {/* Close symbol */}
 							</AlertDialogCancel>
 						</div>
-						<div className="flex items-center gap-6 justify-center">
+						<div className="flex items-center gap-6 justify-center mb-8">
 							<h1>Add a Room</h1>
 						</div>
 					</AlertDialogTitle>
 				</AlertDialogHeader>
-				<div>
+				<div className="px-6">
 					<Form {...form}>
 						<form
 							onSubmit={form.handleSubmit(AddRoom)}
@@ -140,13 +152,13 @@ const AddRoomModal = ({ children }: AddRoomModalProps) => {
 								control={form.control}
 								name="category"
 								render={({ field }) => (
-									<FormItem className="flex justify-between items-center">
-										<FormLabel className="mr-4">
+									<FormItem className="flex items-center">
+										<FormLabel className="w-1/2">
 											<h1 className="text-[#32393A]">
 												Room Category
 											</h1>
 										</FormLabel>
-										<FormControl className="border rounded-md">
+										<FormControl className="w-1/2">
 											<select
 												{...field}
 												className="border rounded-md"
@@ -170,13 +182,13 @@ const AddRoomModal = ({ children }: AddRoomModalProps) => {
 								control={form.control}
 								name="price"
 								render={({ field }) => (
-									<FormItem>
-										<FormLabel className="">
+									<FormItem className="flex items-center">
+										<FormLabel className="w-1/2">
 											<h1 className="text-[#32393A]">
 												Price per Night (in MHT)
 											</h1>
 										</FormLabel>
-										<FormControl>
+										<FormControl className="w-1/2">
 											<Input
 												className="rounded-full"
 												type="number"
@@ -189,13 +201,14 @@ const AddRoomModal = ({ children }: AddRoomModalProps) => {
 								)}
 							/>
 
+							<div className="h-2"></div>
 							<Button
 								className="bg-[#007A86] self-center my-8 rounded-full w-full"
 								size="lg"
-								disabled={isPending}
+							    disabled={isPending || isConfirming}
 								type="submit"
 							>
-								{isPending ? 'Loading' : 'Submit'}
+								{isPending ? 'Pending' : isConfirming ? 'Waiting' : 'Submit'}
 							</Button>
 						</form>
 					</Form>

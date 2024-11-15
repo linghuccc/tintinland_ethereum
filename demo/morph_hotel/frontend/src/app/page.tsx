@@ -15,7 +15,7 @@ export default function Home() {
 	const [rooms, setRooms] = useState<any>([])
 	const { address } = useAccount()
 
-	const { data: roomData } = useReadContract({
+	const { data: roomData, refetch } = useReadContract({
 		abi: bookingAbi,
 		address: bookingAddress,
 		functionName: 'getAllRooms',
@@ -27,17 +27,22 @@ export default function Home() {
 		}
 	}, [roomData])
 
+	const refreshRooms = async () => {
+		const newRoomData = await refetch()
+		setRooms(newRoomData)
+	}
+
 	return (
 		<main>
 			{address === adminAddress && (
-				<section className="py-12 flex  items-center justify-between ">
+				<section className="py-12 flex items-center justify-between">
 					<h1 className="text-lg font-bold">Owner actions</h1>
 					<div className="flex items-center gap-2">
-						<AddRoomModal>
+						<AddRoomModal onSuccess={refreshRooms}>
 							<Button>Add room</Button>
 						</AddRoomModal>
 
-						<SetAvailabilityModal>
+						<SetAvailabilityModal onSuccess={refreshRooms}>
 							<Button>Set availability</Button>
 						</SetAvailabilityModal>
 					</div>
@@ -48,8 +53,12 @@ export default function Home() {
 				{rooms.length > 0 ? (
 					rooms?.map((room: any) => (
 						<>
-							{console.log(room)}
-							<RoomCard key={room.id} room={room} />
+							{/* {console.log(room)} */}
+							<RoomCard
+								key={room.id}
+								room={room}
+								onSuccess={refreshRooms}
+							/>
 						</>
 					))
 				) : (

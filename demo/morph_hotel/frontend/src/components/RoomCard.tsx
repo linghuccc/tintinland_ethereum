@@ -5,9 +5,10 @@ import AddReviewModal from './AddReviewModal'
 
 interface RoomCardProps {
 	room: any
+	onSuccess: () => void
 }
 
-const RoomCard: React.FC<RoomCardProps> = ({ room }) => {
+const RoomCard: React.FC<RoomCardProps> = ({ room, onSuccess }) => {
 	return (
 		<div className="border p-4 m-4">
 			<img
@@ -47,14 +48,14 @@ const RoomCard: React.FC<RoomCardProps> = ({ room }) => {
 
 					<div className="flex gap-3">
 						{room.isAvailable && (
-							<BookRoomModal room={room}>
+							<BookRoomModal room={room} onSuccess={onSuccess}>
 								<button className="bg-green-600 text-white p-2 mt-2">
 									Book Room
 								</button>
 							</BookRoomModal>
 						)}
 
-						<AddReviewModal roomId={room.id}>
+						<AddReviewModal roomId={room.id} onSuccess={onSuccess}>
 							<button className="bg-gray-600 text-white p-2 mt-2">
 								Add Review
 							</button>

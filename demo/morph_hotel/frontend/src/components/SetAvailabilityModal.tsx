@@ -8,7 +8,7 @@ import {
 	AlertDialogTitle,
 	AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
-import { useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { bookingAbi, bookingAddress } from '@/constants'
 import { toast } from 'sonner'
 import {
@@ -29,8 +29,17 @@ import { Button } from '@/components/ui/button'
 
 interface SetAvailabilityModalProps {
 	children: React.ReactNode
+	onSuccess: () => void
 }
-const SetAvailabilityModal = ({ children }: SetAvailabilityModalProps) => {
+const SetAvailabilityModal = ({
+	children,
+	onSuccess,
+}: SetAvailabilityModalProps) => {
+	const [isOpen, setIsOpen] = useState(false)
+
+	// const handleOpen = () => setIsOpen(true)
+	const handleClose = () => setIsOpen(false)
+
 	const {
 		data: hash,
 		error,
@@ -64,7 +73,9 @@ const SetAvailabilityModal = ({ children }: SetAvailabilityModalProps) => {
 					},
 				},
 			})
+			setIsOpen(false)
 		}
+
 		if (error) {
 			if (loadingToast) {
 				toast.dismiss(loadingToast) // Dismiss the loading toast
@@ -81,32 +92,33 @@ const SetAvailabilityModal = ({ children }: SetAvailabilityModalProps) => {
 	}, [isConfirming, isConfirmed, error, hash])
 
 	const formSchema = z.object({
-		roomId: z.number(),
+		roomId: z.any(),
 		availability: z.any(),
 	})
 
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
-			roomId: 0,
+			roomId: undefined,
 			availability: undefined,
 		},
 	})
 
 	const SetAvailability = async (data: z.infer<typeof formSchema>) => {
-		console.log(data)
+		// console.log(data)
 		try {
+			const room_id = Number(data.roomId)
 			const availability = data.availability === 'true'
 
 			const addRoomTx = await writeContractAsync({
 				address: bookingAddress,
 				abi: bookingAbi,
-
 				functionName: 'setRoomAvailability',
-				args: [data.roomId, availability],
+				args: [room_id, availability],
 			})
 
 			console.log('room transaction hash:', addRoomTx)
+			onSuccess()
 		} catch (err: any) {
 			toast.error('Transaction Failed: ' + err.message)
 			console.log('Transaction Failed: ' + err.message)
@@ -114,22 +126,25 @@ const SetAvailabilityModal = ({ children }: SetAvailabilityModalProps) => {
 	}
 
 	return (
-		<AlertDialog>
+		<AlertDialog open={isOpen} onOpenChange={setIsOpen}>
 			<AlertDialogTrigger asChild>{children}</AlertDialogTrigger>
 			<AlertDialogContent>
 				<AlertDialogHeader>
 					<AlertDialogTitle>
 						<div className="flex items-center gap-6 justify-end h-8">
-							<AlertDialogCancel className="text-gray-600 hover:text-gray-900 border-none">
+							<AlertDialogCancel
+								onClick={handleClose}
+								className="text-gray-600 hover:text-gray-900 border-none"
+							>
 								&times; {/* Close symbol */}
 							</AlertDialogCancel>
 						</div>
-						<div className="flex items-center gap-6 justify-center">
+						<div className="flex items-center gap-6 justify-center mb-8">
 							<h1>Set Room Availability</h1>
 						</div>
 					</AlertDialogTitle>
 				</AlertDialogHeader>
-				<div>
+				<div className="px-6">
 					<Form {...form}>
 						<form
 							onSubmit={form.handleSubmit(SetAvailability)}
@@ -139,13 +154,13 @@ const SetAvailabilityModal = ({ children }: SetAvailabilityModalProps) => {
 								control={form.control}
 								name="roomId"
 								render={({ field }) => (
-									<FormItem>
-										<FormLabel className="">
+									<FormItem className="flex items-center">
+										<FormLabel className="w-1/3">
 											<h1 className="text-[#32393A]">
 												Room ID
 											</h1>
 										</FormLabel>
-										<FormControl>
+										<FormControl className="w-2/3">
 											<Input
 												className="rounded-full"
 												type="number"
@@ -162,14 +177,14 @@ const SetAvailabilityModal = ({ children }: SetAvailabilityModalProps) => {
 								control={form.control}
 								name="availability"
 								render={({ field }) => (
-									<FormItem>
-										<FormLabel className="">
+									<FormItem className="flex items-center">
+										<FormLabel className="w-1/3">
 											<h1 className="text-[#32393A]">
 												Room Availability
 											</h1>
 										</FormLabel>
 										<FormControl>
-											<div className="flex justify-between">
+											<div className="flex w-2/3 justify-between px-6">
 												<label className="flex items-center">
 													<input
 														type="radio"
@@ -211,13 +226,14 @@ const SetAvailabilityModal = ({ children }: SetAvailabilityModalProps) => {
 								)}
 							/>
 
+							<div className="h-2"></div>
 							<Button
-								className="bg-[#007A86] self-center my-8 rounded-full w-full"
+								className="bg-[#007A86] self-center rounded-full w-full"
 								size="lg"
-								disabled={isPending}
+							    disabled={isPending || isConfirming}
 								type="submit"
 							>
-								{isPending ? 'Loading' : 'Submit'}
+								{isPending ? 'Pending' : isConfirming ? 'Waiting' : 'Submit'}
 							</Button>
 						</form>
 					</Form>

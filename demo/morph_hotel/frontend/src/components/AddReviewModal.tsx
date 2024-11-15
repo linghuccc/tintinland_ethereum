@@ -8,7 +8,7 @@ import {
 	AlertDialogTitle,
 	AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
-import { useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { bookingAbi, bookingAddress } from '@/constants'
 import { toast } from 'sonner'
 import {
@@ -30,12 +30,19 @@ import { Button } from '@/components/ui/button'
 interface AddReviewModalProps {
 	children: React.ReactNode
 	roomId: bigint
+	onSuccess: () => void
 }
 
 const AddReviewModal: React.FC<AddReviewModalProps> = ({
 	children,
 	roomId,
+	onSuccess,
 }) => {
+	const [isOpen, setIsOpen] = useState(false)
+
+	// const handleOpen = () => setIsOpen(true)
+	const handleClose = () => setIsOpen(false)
+
 	const {
 		data: hash,
 		error,
@@ -69,6 +76,7 @@ const AddReviewModal: React.FC<AddReviewModalProps> = ({
 					},
 				},
 			})
+			setIsOpen(false)
 		}
 		if (error) {
 			if (loadingToast) {
@@ -93,8 +101,8 @@ const AddReviewModal: React.FC<AddReviewModalProps> = ({
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
-			rating: 0,
-			comment: '',
+			rating: undefined,
+			comment: undefined,
 		},
 	})
 
@@ -122,23 +130,27 @@ const AddReviewModal: React.FC<AddReviewModalProps> = ({
 			})
 
 			console.log('room transaction hash:', addReviewTx)
+			onSuccess()
 		} catch (err: any) {
 			toast.error('Transaction Failed: ' + err.message)
 		}
 	}
 
 	return (
-		<AlertDialog>
+		<AlertDialog open={isOpen} onOpenChange={setIsOpen}>
 			<AlertDialogTrigger asChild>{children}</AlertDialogTrigger>
 			<AlertDialogContent>
 				<AlertDialogHeader>
 					<AlertDialogTitle>
 						<div className="flex items-center gap-6 justify-end h-8">
-							<AlertDialogCancel className="text-gray-600 hover:text-gray-900 border-none">
+							<AlertDialogCancel
+								onClick={handleClose}
+								className="text-gray-600 hover:text-gray-900 border-none"
+							>
 								&times; {/* Close symbol */}
 							</AlertDialogCancel>
 						</div>
-						<div className="flex items-center gap-6 justify-center">
+						<div className="flex items-center gap-6 justify-center mb-8">
 							<h1>Add Room Review</h1>
 						</div>
 					</AlertDialogTitle>
@@ -150,14 +162,9 @@ const AddReviewModal: React.FC<AddReviewModalProps> = ({
 							className="space-y-8"
 						>
 							{/* Display roomId as a label only */}
-							<div>
-								<FormLabel className="">
-									<h1 className="text-[#32393A]">
-										Room ID: {roomId.toString()}
-									</h1>
-								</FormLabel>
-							</div>
-
+							<FormLabel className="">
+								<h1 className="text-[#32393A]">Room ID: {roomId.toString()}</h1>
+							</FormLabel>
 							<FormField
 								control={form.control}
 								name="rating"
@@ -165,16 +172,39 @@ const AddReviewModal: React.FC<AddReviewModalProps> = ({
 									<FormItem>
 										<FormLabel className="">
 											<h1 className="text-[#32393A]">
-												Rating (1-5)
+												Rating
 											</h1>
 										</FormLabel>
 										<FormControl>
-											<Input
-												className="rounded-full"
-												type="number"
-												placeholder="Please enter rating here"
-												{...field}
-											/>
+											<div className="flex justify-between">
+												{[1, 2, 3, 4, 5].map(
+													(value) => (
+														<label
+															key={value}
+															className="flex items-center"
+														>
+															<input
+																type="radio"
+																value={value}
+																checked={
+																	field.value ===
+																	value.toString()
+																}
+																onChange={() =>
+																	field.onChange(
+																		value.toString()
+																	)
+																}
+																className="mr-2"
+															/>
+															{value}{' '}
+															{value === 1
+																? 'star'
+																: 'stars'}
+														</label>
+													)
+												)}
+											</div>
 										</FormControl>
 										<FormMessage />
 									</FormItem>
@@ -206,10 +236,10 @@ const AddReviewModal: React.FC<AddReviewModalProps> = ({
 							<Button
 								className="bg-[#007A86] self-center my-8 rounded-full w-full"
 								size="lg"
-								disabled={isPending}
+							    disabled={isPending || isConfirming}
 								type="submit"
 							>
-								{isPending ? 'Loading' : 'Submit'}
+								{isPending ? 'Pending' : isConfirming ? 'Waiting' : 'Submit'}
 							</Button>
 						</form>
 					</Form>

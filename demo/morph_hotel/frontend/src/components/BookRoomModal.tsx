@@ -8,7 +8,7 @@ import {
 	AlertDialogTitle,
 	AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
-import { useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import {
 	tokenAbi,
 	tokenAddress,
@@ -36,9 +36,19 @@ import { Button } from '@/components/ui/button'
 interface BookRoomModalProps {
 	children: React.ReactNode
 	room: any
+	onSuccess: () => void
 }
 
-const BookRoomModal: React.FC<BookRoomModalProps> = ({ children, room }) => {
+const BookRoomModal: React.FC<BookRoomModalProps> = ({
+	children,
+	room,
+	onSuccess,
+}) => {
+	const [isOpen, setIsOpen] = useState(false)
+
+	// const handleOpen = () => setIsOpen(true)
+	const handleClose = () => setIsOpen(false)
+
 	const {
 		data: hash,
 		error,
@@ -72,6 +82,7 @@ const BookRoomModal: React.FC<BookRoomModalProps> = ({ children, room }) => {
 					},
 				},
 			})
+			setIsOpen(false)
 		}
 		if (error) {
 			if (loadingToast) {
@@ -90,7 +101,7 @@ const BookRoomModal: React.FC<BookRoomModalProps> = ({ children, room }) => {
 
 	const formSchema = z.object({
 		checkInDate: z.string().min(1),
-		duration: z.number(),
+		duration: z.any(),
 	})
 
 	// Get today's date formatted as YYYY-MM-DD
@@ -131,13 +142,6 @@ const BookRoomModal: React.FC<BookRoomModalProps> = ({ children, room }) => {
 
 			console.log('token approval hash:', tokenApprovalTx)
 
-			// Wait for the token approval transaction to be confirmed
-			// const provider = new ethers.providers.Web3Provider(window.ethereum)
-			// const receipt = await provider.waitForTransaction(tokenApprovalTx)
-
-			// if (receipt.status === 1) {
-			// 	console.log('Token approval transaction confirmed')
-
 			// Proceed with booking the room only after successful token approval
 			const bookRoomTx = await writeContractAsync({
 				abi: bookingAbi,
@@ -147,109 +151,115 @@ const BookRoomModal: React.FC<BookRoomModalProps> = ({ children, room }) => {
 			})
 
 			console.log('room booking hash:', bookRoomTx)
-			// } else {
-			// 	console.error('Token approval transaction failed')
-			// }
 		} catch (err: any) {
 			toast.error('Transaction Failed: ' + err.message)
 		}
 	}
-
 	return (
-		<AlertDialog>
+		<AlertDialog open={isOpen} onOpenChange={setIsOpen}>
 			<AlertDialogTrigger asChild>{children}</AlertDialogTrigger>
 			<AlertDialogContent>
 				<AlertDialogHeader>
 					<AlertDialogTitle>
 						<div className="flex items-center gap-6 justify-end h-8">
-							<AlertDialogCancel className="text-gray-600 hover:text-gray-900 border-none">
+							<AlertDialogCancel
+								onClick={handleClose}
+								className="text-gray-600 hover:text-gray-900 border-none"
+							>
 								&times; {/* Close symbol */}
 							</AlertDialogCancel>
 						</div>
-						<div className="flex items-center gap-6 justify-center">
+						<div className="flex items-center gap-6 justify-center mb-8">
 							<h1>Book Room</h1>
 						</div>
 					</AlertDialogTitle>
 				</AlertDialogHeader>
-				<div>
-					<Form {...form}>
-						<form
-							onSubmit={form.handleSubmit(BookRoom)}
-							className="space-y-8"
+				<Form {...form}>
+					<form onSubmit={form.handleSubmit(BookRoom)} className="">
+						<div className="flex items-center mb-8">
+							<FormLabel className="w-1/2">
+								<h1 className="text-[#32393A]">
+									Room Category
+								</h1>
+							</FormLabel>
+							<FormLabel className="w-1/2">
+								<h1 className="text-[#32393A]">
+									{getCategoryLabel(room.category)}
+								</h1>
+							</FormLabel>
+						</div>
+
+						<div className="flex items-center mb-4">
+							<FormLabel className="w-1/2">
+								<h1 className="text-[#32393A]">Room ID</h1>
+							</FormLabel>
+							<FormLabel className="w-1/2">
+								<h1 className="text-[#32393A]">
+									{room.id.toString()}
+								</h1>
+							</FormLabel>
+						</div>
+
+						<FormField
+							control={form.control}
+							name="checkInDate"
+							render={({ field }) => (
+								<FormItem className="flex items-center space-y-2">
+									<FormLabel className="w-1/2">
+										<h1 className="text-[#32393A]">
+											Check-In Date
+										</h1>
+									</FormLabel>
+									<FormControl className="w-1/2">
+										<Input
+											className="rounded-full"
+											type="date"
+											{...field}
+										/>
+									</FormControl>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+
+						<FormField
+							control={form.control}
+							name="duration"
+							render={({ field }) => (
+								<FormItem className="flex items-center space-y-2">
+									<FormLabel className="w-1/2">
+										<h1 className="text-[#32393A]">
+											Duration (Days)
+										</h1>
+									</FormLabel>
+									<FormControl className="w-1/2">
+										<Input
+											className="rounded-full"
+											type="number"
+											placeholder="Please enter duration here"
+											{...field}
+										/>
+									</FormControl>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+
+						<div className="h-2"></div>
+						<Button
+							className="bg-[#007A86] self-center my-8 rounded-full w-full"
+							size="lg"
+							disabled={isPending || isConfirming}
+							type="submit"
 						>
-							<div>
-								<FormLabel className="">
-									<h1 className="text-[#32393A]">
-										Room Category:{' '}
-										{getCategoryLabel(room.category)}
-									</h1>
-								</FormLabel>
-							</div>
-
-							<div>
-								<FormLabel className="">
-									<h1 className="text-[#32393A]">
-										Room ID: {room.id.toString()}
-									</h1>
-								</FormLabel>
-							</div>
-
-							<FormField
-								control={form.control}
-								name="checkInDate"
-								render={({ field }) => (
-									<FormItem>
-										<FormLabel className="">
-											<h1 className="text-[#32393A]">
-												Check-In Date
-											</h1>
-										</FormLabel>
-										<FormControl>
-											<Input
-												className="rounded-full"
-												type="date"
-												{...field}
-											/>
-										</FormControl>
-										<FormMessage />
-									</FormItem>
-								)}
-							/>
-
-							<FormField
-								control={form.control}
-								name="duration"
-								render={({ field }) => (
-									<FormItem>
-										<FormLabel className="">
-											<h1 className="text-[#32393A]">
-												Duration (Days)
-											</h1>
-										</FormLabel>
-										<FormControl>
-											<Input
-												className="rounded-full"
-												type="number"
-												placeholder="Please enter duration here"
-												{...field}
-											/>
-										</FormControl>
-										<FormMessage />
-									</FormItem>
-								)}
-							/>
-
-							<Button
-								className="bg-[#007A86] self-center my-8 rounded-full w-full"
-								size="lg"
-								disabled={isPending}
-								type="submit"
-							>
-								{isPending ? 'Loading' : 'Submit'}
-							</Button>
-						</form>
-					</Form>
-				</div>
+							{isPending
+								? 'Pending'
+								: isConfirming
+								? 'Waiting'
+								: 'Submit'}
+						</Button>
+					</form>
+				</Form>
 			</AlertDialogContent>
 		</AlertDialog>
 	)
